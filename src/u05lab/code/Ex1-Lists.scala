@@ -116,7 +116,7 @@ trait ListImplementation[A] extends List[A] {
   }
 
   override def zipRight: List[(A,Int)] = { // questions: what is the type of keyword ???
-    // 1. solution
+    // 1. solution (recursive)
     /*
     @tailrec
     def _zipRight(l: List[A], k: Int = 0, res: List[(A,Int)] = Nil()): List[(A,Int)] = l match {
@@ -126,20 +126,25 @@ trait ListImplementation[A] extends List[A] {
     _zipRight(this).reverse()
     */
 
-    // 2. solution
+    // 2. solution (with map)
     /*
     var k = -1;
     this.map( e => { k+=1; (e, k) } )
     */
 
-    // 3. solution
+    // 3. solution (with iterator)
     val s=Iterator.from(0)
     this.map( (_, s.next) )
   }
 
-  override def partition(pred: A => Boolean): (List[A],List[A]) = ???
+  // si potrebbe fare come lo span con il foldLeft
+  override def partition(pred: A => Boolean): (List[A], List[A]) = (this.filter(pred), this.filter(!pred(_)))
 
-  override def span(pred: A => Boolean): (List[A],List[A]) = ???
+  override def span(pred: A => Boolean): (List[A], List[A]) =
+    this.foldLeft((List.nil[A], List.nil[A]))( (acc, i) => acc match {
+      case (l1, Nil()) if pred(i) => (l1.append(i :: Nil()), Nil())
+      case (l1, l2) => (l1, l2.append(i :: Nil()))
+    })
 
   /**
     *
