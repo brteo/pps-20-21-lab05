@@ -31,4 +31,17 @@ class ListTest {
     assertEquals(100, lInt.reduce(_ + _))
     assertThrows(classOf[UnsupportedOperationException], () => List.nil[Int].reduce(_+_))
   }
+
+  @Test
+  def testTakeRight() {
+    assertEquals(List(30, 40), lInt.takeRight(2))
+    assertEquals(List.nil, lInt.takeRight(0))
+    assertEquals(List("b","a","c"), lString.takeRight(3))
+  }
+
+  @Test
+  def testCollect() {
+    assertEquals(List(9, 39), lInt.collect({ case x if x<15 || x>35 => x-1 }))
+    assertEquals(List(0, 0), lString.collect({ case x if x=="a" => 0 }))
+  }
 }

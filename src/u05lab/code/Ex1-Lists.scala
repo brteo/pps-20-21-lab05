@@ -41,6 +41,8 @@ sealed trait List[A] {
 
   // right-associative construction: 10 :: 20 :: 30 :: Nil()
   def ::(head: A): List[A] = Cons(head,this)
+
+  def collect[B](f: PartialFunction[A,B]): List[B]
 }
 
 // defining concrete implementations based on the same template
@@ -134,7 +136,7 @@ trait ListImplementation[A] extends List[A] {
 
     // 3. solution (with iterator)
     val s=Iterator.from(0)
-    this.map( (_, s.next) )
+    this.map((_, s.next))
   }
 
   // si potrebbe fare come lo span con il foldLeft
@@ -156,7 +158,17 @@ trait ListImplementation[A] extends List[A] {
     case Nil() => throw new UnsupportedOperationException()
   }
 
-  override def takeRight(n: Int): List[A] = ???
+  override def takeRight(n: Int): List[A] =
+    this.foldRight((List.nil[A], 0))( (i, acc) => acc match {
+      case (l1, count) if count < n => (i :: l1, count+1)
+      case (l1, count) => (l1, count+1)
+    })._1
+
+  override def collect[B](f: PartialFunction[A,B]): List[B] = this match {
+    case h :: t if f.isDefinedAt(h) => f(h) :: t.collect(f)
+    case _ :: t => t.collect(f)
+    case _ => Nil()
+  }
 }
 
 // Factories
