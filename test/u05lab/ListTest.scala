@@ -25,4 +25,10 @@ class ListTest {
     assertEquals((List(10), List(20, 30, 40)), lInt.span(_ < 15))
     assertEquals((List("a"), List("b","a","c")), lString.span(_ == "a"))
   }
+
+  @Test
+  def testReduce() {
+    assertEquals(100, lInt.reduce(_ + _))
+    assertThrows(classOf[UnsupportedOperationException], () => List.nil[Int].reduce(_+_))
+  }
 }

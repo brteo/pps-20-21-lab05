@@ -150,7 +150,11 @@ trait ListImplementation[A] extends List[A] {
     *
     * @throws UnsupportedOperationException if the list is empty
     */
-  override def reduce(op: (A,A)=>A): A = ???
+  override def reduce(op: (A,A)=>A): A = this match {
+    case h :: Nil() => h
+    case h :: t => op(h, t.reduce(op))
+    case Nil() => throw new UnsupportedOperationException()
+  }
 
   override def takeRight(n: Int): List[A] = ???
 }
