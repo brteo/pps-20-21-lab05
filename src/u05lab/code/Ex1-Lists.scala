@@ -122,7 +122,7 @@ trait ListImplementation[A] extends List[A] {
     /*
     @tailrec
     def _zipRight(l: List[A], k: Int = 0, res: List[(A,Int)] = Nil()): List[(A,Int)] = l match {
-      case h :: t => _zipRight(t, k+1, (h, k) :: res)
+      case h :: t => _zipRight( k+t,1, (h, k) :: res)
       case _ => res
     }
     _zipRight(this).reverse()
