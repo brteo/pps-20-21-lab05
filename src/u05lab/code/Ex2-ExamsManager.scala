@@ -52,7 +52,7 @@ object ExamsManager {
     private var items:Map[String, Map[String, ExamResult]] = Map()
 
     override def createNewCall(call: String) = items.contains(call) match {
-      case true => callNotExist
+      case true => throw new IllegalArgumentException("Call " + call + " already exits")
       case _ => items += (call -> Map())
     }
 
@@ -64,18 +64,26 @@ object ExamsManager {
 
     override def getAllStudentsFromCall(call: String):Set[String] = items.getOrElse(call, callNotExist).keySet
 
-    override def getEvaluationsMapFromCall(call: String):Map[String, Int] = items.getOrElse(call, callNotExist).collect({
-        case (student, result) if result.kind == ResultKind.SUCCEEDED => student -> result.evaluation.get
-      })
+    override def getEvaluationsMapFromCall(call: String):Map[String, Int] =
+      items
+        .getOrElse(call, callNotExist)
+        .collect({
+          case (student, result) if result.kind == ResultKind.SUCCEEDED => student -> result.evaluation.get
+        })
 
-    override def getResultsMapFromStudent(student: String):Map[String, ExamResult] = items.collect({
-      case (call, results) if results.contains(student) => call -> results(student)
-    })
+    override def getResultsMapFromStudent(student: String):Map[String, ExamResult] =
+      items
+        .collect({
+          case (call, results) if results.contains(student) => call -> results(student)
+        })
 
     override def getBestResultFromStudent(student: String):Option[Int] =
-      items.collect({
-        case (call, results) if results.contains(student) && results(student).kind == ResultKind.SUCCEEDED => (call -> results(student).evaluation.get)
-      }).valuesIterator.reduceLeftOption(_ max _)
+      items
+        .collect({
+          case (call, results) if results.contains(student) && results(student).kind == ResultKind.SUCCEEDED => (call -> results(student).evaluation.get)
+        })
+        .valuesIterator
+        .reduceLeftOption(_ max _)
   }
 }
 
