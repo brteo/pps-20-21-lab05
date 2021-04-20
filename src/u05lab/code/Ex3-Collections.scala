@@ -71,6 +71,7 @@ object TestTool {
     "MutableHashSet" -> MutableSetTest((1 to NUMBERS).to[MutableHashSet]),
     "MutableTreeSet" -> MutableSetTest((1 to NUMBERS).to[MutableTreeSet]),
   )
+
   val tests = Set("size", "last", "append", "remove")
 
   def go:Map[String, Map[String, FiniteDuration]] =
@@ -101,12 +102,13 @@ object TestTool {
       .foreach {
         case (key, values) => {
           println("Test: " + key)
-          values.toSeq.sortWith(_._2 < _._2).foldLeft(FiniteDuration(0, TimeUnit.NANOSECONDS)) {
-            case (last, (t, r)) => {
-              println("\t" + t + " -> " + r.toNanos.toString() + " ns" +
-                (if (last.toNanos != 0) " (+" + (r - last).toNanos.toString() + " ns)" else "")
-              )
-              r
+          values
+            .toSeq
+            .sortWith(_._2 < _._2)
+            .foldLeft(FiniteDuration(0, TimeUnit.NANOSECONDS)) {
+              case (last, (t, r)) => {
+                println("\t" + t + " -> " + r.toNanos.toString() + " ns" + (if (last.toNanos != 0) " (+" + (r - last).toNanos.toString() + " ns)" else ""))
+                r
               }
             }
           }
