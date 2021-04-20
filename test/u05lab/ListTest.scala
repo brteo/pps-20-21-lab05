@@ -44,4 +44,13 @@ class ListTest {
     assertEquals(List(9, 39), lInt.collect({ case x if x<15 || x>35 => x-1 }))
     assertEquals(List(0, 0), lString.collect({ case x if x=="a" => 0 }))
   }
+
+  @Test
+  def testSequence() {
+    val l1:List[Option[Int]] = List(Some(1), Some(2), Some(3))
+    assertEquals(Some(List(1, 2, 3)), List.sequence(l1))
+
+    val l2:List[Option[Int]] = List(Some(1), None, Some(3))
+    assertEquals(None, List.sequence(l2))
+  }
 }

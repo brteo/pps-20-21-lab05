@@ -118,7 +118,7 @@ trait ListImplementation[A] extends List[A] {
   }
 
   override def zipRight: List[(A,Int)] = { // questions: what is the type of keyword ???
-    // 1. solution (recursive)
+    // solution 1 (recursive)
     /*
     @tailrec
     def _zipRight(l: List[A], k: Int = 0, res: List[(A,Int)] = Nil()): List[(A,Int)] = l match {
@@ -128,13 +128,13 @@ trait ListImplementation[A] extends List[A] {
     _zipRight(this).reverse()
     */
 
-    // 2. solution (with map)
+    // solution 2 (with map)
     /*
     var k = -1;
     this.map( e => { k+=1; (e, k) } )
     */
 
-    // 3. solution (with iterator)
+    // solution 3 (with iterator)
     val s=Iterator.from(0)
     this.map((_, s.next))
   }
@@ -186,6 +186,12 @@ object List {
 
   def of[A](elem: A, n: Int): List[A] =
     if (n==0) Nil() else elem :: of(elem,n-1)
+
+  // Ex. 4: optional
+  def sequence[A](a: List[Option[A]]): Option[List[A]] =
+    a.foldRight(Some(nil): Option[List[A]]) {
+      (e, acc) => if (e.isEmpty) return None else Some(e.get :: acc.get)
+    }
 }
 
 object ListsTest extends App {
