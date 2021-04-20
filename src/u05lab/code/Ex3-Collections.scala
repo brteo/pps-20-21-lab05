@@ -23,7 +23,7 @@ import PerformanceUtils._
 import scala.collection.immutable.{HashSet, TreeSet}
 import scala.collection.mutable.{Buffer, ListBuffer, ArrayBuffer, Set => MutableSet, HashSet => MutableHashSet, TreeSet => MutableTreeSet}
 
-abstract class IterableTest[A] {
+trait IterableTest[A] {
   def i: Iterable[A]
 
   def size: Int = i.size
@@ -117,7 +117,7 @@ object TestTool {
 
 object CollectionsTest extends App {
 
-  println(TestTool.exec)
+  TestTool.exec
 
   /*
   * Output
