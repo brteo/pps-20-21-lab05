@@ -140,35 +140,51 @@ trait ListImplementation[A] extends List[A] {
   }
 
   // si potrebbe fare come lo span con il foldLeft
-  override def partition(pred: A => Boolean): (List[A], List[A]) = (this.filter(pred), this.filter(!pred(_)))
+  override def partition(pred: A => Boolean): (List[A], List[A]) = (filter(pred), filter(!pred(_)))
 
   override def span(pred: A => Boolean): (List[A], List[A]) =
-    this.foldLeft((List.nil[A], List.nil[A]))( (acc, i) => acc match {
-      case (l1, Nil()) if pred(i) => (l1.append(i :: Nil()), Nil())
-      case (l1, l2) => (l1, l2.append(i :: Nil()))
-    })
+    foldLeft((List.nil[A], List.nil[A]))((acc, i) => acc match {
+      case (l1, Nil()) if pred(i) => (i :: l1, Nil())
+      case (l1, l2) => (l1, i :: l2)
+    }) match { case (l1, l2) => (l1.reverse(), l2.reverse()) }
 
   /**
     *
     * @throws UnsupportedOperationException if the list is empty
     */
+
+  /*
   override def reduce(op: (A,A)=>A): A = this match {
     case h :: Nil() => h
     case h :: t => op(h, t.reduce(op))
     case Nil() => throw new UnsupportedOperationException()
   }
+  */
+  override def reduce(op: (A,A)=>A): A = this match {
+    case h :: t => t.foldLeft(h)(op)
+    case _ => throw new UnsupportedOperationException()
+  }
 
+  /*
   override def takeRight(n: Int): List[A] =
-    this.foldRight((List.nil[A], 0))( (i, acc) => acc match {
+    foldRight((List.nil[A], 0))( (i, acc) => acc match {
       case (l1, count) if count < n => (i :: l1, count+1)
       case (l1, count) => (l1, count+1)
     })._1
+  */
+  override def takeRight(n: Int): List[A] = {
+    var count = 0;
+    foldRight(List.nil[A])((i, acc) => if(count < n) { count+=1; i :: acc} else acc )
+  }
 
+  /*
   override def collect[B](f: PartialFunction[A,B]): List[B] = this match {
     case h :: t if f.isDefinedAt(h) => f(h) :: t.collect(f)
     case _ :: t => t.collect(f)
     case _ => Nil()
   }
+  */
+  override def collect[B](f: PartialFunction[A,B]): List[B] = filter(f.isDefinedAt(_)).map(f(_))
 }
 
 // Factories
